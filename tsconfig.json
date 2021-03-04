@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "strict": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "outDir": "lib",
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["src"]
+}
