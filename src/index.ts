@@ -133,14 +133,14 @@ async function GetAvailableButtonForMatch(
       return;
     }
 
-    await new Promise((resolve) => {
-      setTimeout(resolve, 5000);
-    });
-
     await driver.wait(
       until.elementLocated(By.id('websearch_multiselect_group')),
       10000,
     );
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, 5000);
+    });
 
     const addToCart = await driver.findElement(
       By.className('websearch_multiselect_buttonaddtocart'),
@@ -153,9 +153,10 @@ async function GetAvailableButtonForMatch(
     });
 
     const memberContainers = await driver.findElements(
-      By.className('webaddtocartmatrix_membergroup'),
+      By.className('webaddtocartmatrix__membergroup'),
     );
 
+    console.log('Containers: ', memberContainers.length);
     await Promise.all(
       memberContainers.map(async (memberContainer) => {
         const header = await memberContainer.findElement(
@@ -163,6 +164,7 @@ async function GetAvailableButtonForMatch(
         );
 
         const text = await header.getText();
+        console.log('Header Text: ', text);
 
         if (
           ![
@@ -179,9 +181,18 @@ async function GetAvailableButtonForMatch(
           By.className('checkbox'),
         );
 
-        await checkbox.click();
+        const selected = await checkbox.isSelected();
+        if (!selected) {
+          console.log('Selecting: ', text);
+          await checkbox.click();
+        }
       }),
     );
+
+    console.log('Waiting after selecting users.');
+    await new Promise((resolve) => {
+      setTimeout(resolve, 5000);
+    });
 
     const submitButton = await driver.findElement(By.name('button201'));
 
@@ -190,6 +201,19 @@ async function GetAvailableButtonForMatch(
     await new Promise((resolve) => {
       setTimeout(resolve, 5000);
     });
+
+    for (let i = 0; i < 4; i += 1) {
+      const agreeButton = await driver.findElement(
+        By.id('processingprompts_waivercheckbox'),
+      );
+      agreeButton.click();
+
+      const oneClickFinish = await driver.findElement(
+        By.id('processingprompts_buttononeclicktofinish'),
+      );
+
+      oneClickFinish.click();
+    }
   } finally {
     await driver.quit();
   }
